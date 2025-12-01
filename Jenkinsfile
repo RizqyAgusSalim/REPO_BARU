@@ -32,7 +32,10 @@ pipeline {
         stage('Unit Test') {
             steps {
                 echo 'Menjalankan Unit Tests menggunakan PHPUnit...'
-                bat 'mkdir target\\junit-reports' 
+                // Perbaikan: Cek folder dulu sebelum buat, agar tidak error jika sudah ada
+                bat '''
+                    if not exist target\\junit-reports mkdir target\\junit-reports
+                '''
                 bat "${env.PHP_EXE} .\\vendor\\bin\\phpunit --log-junit target\\junit-reports\\test-results.xml tests\\" 
             }
         }
