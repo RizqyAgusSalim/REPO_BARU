@@ -1,8 +1,8 @@
-// Jenkinsfile: Versi Final menggunakan BAT dan Jalur PHP Mutlak
+// Jenkinsfile: Versi Final & Lengkap dengan Pengarsipan Artifacts
 pipeline {
     agent any
     
-    // Konfigurasi Environment Variable (Opsional, tapi membantu)
+    // Konfigurasi Environment Variable untuk Jalur PHP
     environment {
         // Ganti jalur ini dengan PATH KE PHP.EXE di komputer Anda!
         PHP_EXE = 'C:\\xampp\\php\\php.exe' 
@@ -21,10 +21,9 @@ pipeline {
                 echo 'Mengunduh dan Menginstal Composer dependencies...'
                 
                 // 1. Unduh composer.phar ke workspace Jenkins menggunakan PHP mutlak
-                // Langkah ini memastikan file composer.phar ada di workspace.
                 bat "${env.PHP_EXE} -r \"copy('https://getcomposer.org/installer', 'composer-setup.php');\""
                 bat "${env.PHP_EXE} composer-setup.php"
-                bat 'del composer-setup.php' // Hapus file setup
+                bat 'del composer-setup.php' 
                 
                 // 2. Jalankan composer.phar untuk menginstal dependensi (vendor/)
                 bat "${env.PHP_EXE} composer.phar install --no-dev --prefer-dist" 
@@ -38,7 +37,6 @@ pipeline {
                 bat 'mkdir target\\junit-reports' 
                 
                 // 2. Jalankan PHPUnit menggunakan PHP mutlak
-                // PHPUnit executable berada di .\\vendor\\bin\\phpunit
                 bat "${env.PHP_EXE} .\\vendor\\bin\\phpunit --log-junit target\\junit-reports\\test-results.xml tests\\" 
             }
         }
@@ -54,9 +52,23 @@ pipeline {
         stage('Execute PHP Script') {
             steps {
                 echo 'Menjalankan skrip utama...'
-                // Jalankan skrip utama (index.php) menggunakan PHP mutlak
                 bat "${env.PHP_EXE} index.php"
             }
         }
     } 
+    
+    // Post-build actions untuk mengarsipkan file penting
+    post {
+        always {
+            echo 'Mengarsipkan artifact penting...'
+            // Mengarsipkan hasil XML JUnit sehingga dapat diunduh atau digunakan oleh plugin lain
+            archiveArtifacts artifacts: 'target/junit-reports/test-results.xml', onlyIfSuccessful: true
+        }
+        success {
+            echo 'Pipeline Selesai dengan SUKSES! 🥳'
+        }
+        failure {
+            echo 'Pipeline GAGAL! 😢 Periksa log Unit Test.'
+        }
+    }
 }
