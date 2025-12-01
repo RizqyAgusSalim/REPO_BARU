@@ -9,7 +9,7 @@ pipeline {
             steps {
                 echo 'Mengambil kode dari Git...'
                 // URL sudah BENAR
-                git url: 'https://github.com/RizqyAgusSalim/REPO_BARU' 
+                git url: 'https://github.com/RizqyAgusSalim/REPO_BARU', branch:'main'
             }
         } 
         
