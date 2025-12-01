@@ -1,28 +1,24 @@
-// Jenkinsfile (FINAL VERSION - KEMBALI MENGGUNAKAN 'sh')
+// Jenkinsfile (FINAL FINAL FINAL VERSION - MENGGUNAKAN 'bat')
 pipeline {
     agent any
     stages { 
-        stage('Checkout Code') {
-            steps {
-                echo 'Mengambil kode dari Git...'
-                git url: 'https://github.com/RizqyAgusSalim/REPO_BARU', branch: 'main'
-            }
-        } 
+        // ... Checkout Code (Tahap 1)
         
-        // Tahap 2: Menggunakan sh
+        // Tahap 2: Menggunakan bat
         stage('Install Dependencies') {
             steps {
                 echo 'Menginstal Composer dependencies...'
-                sh 'composer install --no-dev --prefer-dist' // KEMBALI KE sh
+                bat 'composer install --no-dev --prefer-dist' 
             }
         }
         
-        // Tahap 3: Menggunakan sh
+        // Tahap 3: Menggunakan bat
         stage('Unit Test') {
             steps {
                 echo 'Menjalankan Unit Tests menggunakan PHPUnit...'
-                sh 'mkdir -p target/junit-reports' // KEMBALI KE sh
-                sh './vendor/bin/phpunit --log-junit target/junit-reports/test-results.xml tests/' // KEMBALI KE sh
+                // Perintah Windows Command Prompt (bat):
+                bat 'mkdir target\\junit-reports' 
+                bat '.\\vendor\\bin\\phpunit --log-junit target\\junit-reports\\test-results.xml tests\\' // Gunakan backslash \
             }
         }
         
@@ -34,11 +30,11 @@ pipeline {
             }
         }
         
-        // Tahap 5: Menggunakan sh
+        // Tahap 5: Menggunakan bat
         stage('Execute PHP Script') {
             steps {
-                echo 'Menjalankan skrip utama menggunakan sh...'
-                sh 'php index.php' // KEMBALI KE sh
+                echo 'Menjalankan skrip utama menggunakan bat...'
+                bat 'php index.php'
             }
         }
     } 
