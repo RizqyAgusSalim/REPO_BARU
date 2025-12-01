@@ -1,19 +1,18 @@
-// Tugas jenkins/Jenkinsfile (VERSI FINAL YANG BENAR)
+// Jenkinsfile (FINAL VERSION)
 pipeline {
     agent any
 
     stages { 
 
-        // --- Tahap 1: Mengambil Kode dari GitHub ---
+        // --- Tahap 1: Checkout Code (Fix: branch) ---
         stage('Checkout Code') {
             steps {
                 echo 'Mengambil kode dari Git...'
-                // URL sudah BENAR
-                git url: 'https://github.com/RizqyAgusSalim/REPO_BARU', branch:'main'
+                git url: 'https://github.com/RizqyAgusSalim/REPO_BARU', branch: 'main'
             }
         } 
         
-        // --- Tahap 2: Instalasi Dependensi (PHPUnit) ---
+        // --- Tahap 2: Install Dependencies (Menggunakan sh) ---
         stage('Install Dependencies') {
             steps {
                 echo 'Menginstal Composer dependencies...'
@@ -21,16 +20,16 @@ pipeline {
             }
         }
         
-        // --- Tahap 3: Menjalankan Unit Test ---
+        // --- Tahap 3: Unit Test (Menggunakan sh) ---
         stage('Unit Test') {
             steps {
                 echo 'Menjalankan Unit Tests menggunakan PHPUnit...'
-                sh 'mkdir -p target/junit-reports'
+                sh 'mkdir -p target/junit-reports' // -p berfungsi di sh
                 sh './vendor/bin/phpunit --log-junit target/junit-reports/test-results.xml tests/'
             }
         }
         
-        // --- Tahap 4: Publikasi Hasil Tes ke Jenkins ---
+        // --- Tahap 4: Publish Test Results ---
         stage('Publish Test Results') {
             steps {
                 echo 'Mempublikasikan hasil tes ke Jenkins...'
@@ -38,13 +37,13 @@ pipeline {
             }
         }
         
-        // --- Tahap 5: Eksekusi Skrip PHP (Sesuai Permintaan Tugas) ---
+        // --- Tahap 5: Eksekusi Skrip PHP (Menggunakan sh) ---
         stage('Execute PHP Script') {
             steps {
-                echo 'Menjalankan skrip utama menggunakan Powershell...'
-                powershell 'php index.php'
+                echo 'Menjalankan skrip utama menggunakan sh...'
+                sh 'php index.php' // Perintah dikirim melalui sh (Git Bash)
             }
         }
 
-    } // Penutup blok stages
-} // Penutup blok pipeline
+    } 
+}
