@@ -1,4 +1,4 @@
-// Jenkinsfile (FINAL VERSION - USING 'bash')
+// Jenkinsfile (FINAL VERSION - KEMBALI MENGGUNAKAN 'sh')
 pipeline {
     agent any
     stages { 
@@ -9,24 +9,24 @@ pipeline {
             }
         } 
         
-        // Tahap 2: Menggunakan bash
+        // Tahap 2: Menggunakan sh
         stage('Install Dependencies') {
             steps {
                 echo 'Menginstal Composer dependencies...'
-                bash 'composer install --no-dev --prefer-dist' // UBAH sh MENJADI bash
+                sh 'composer install --no-dev --prefer-dist' // KEMBALI KE sh
             }
         }
         
-        // Tahap 3: Menggunakan bash
+        // Tahap 3: Menggunakan sh
         stage('Unit Test') {
             steps {
                 echo 'Menjalankan Unit Tests menggunakan PHPUnit...'
-                bash 'mkdir -p target/junit-reports' // UBAH sh MENJADI bash
-                bash './vendor/bin/phpunit --log-junit target/junit-reports/test-results.xml tests/' // UBAH sh MENJADI bash
+                sh 'mkdir -p target/junit-reports' // KEMBALI KE sh
+                sh './vendor/bin/phpunit --log-junit target/junit-reports/test-results.xml tests/' // KEMBALI KE sh
             }
         }
         
-        // Tahap 4: Tetap (junit adalah Jenkins Step)
+        // Tahap 4: Tetap
         stage('Publish Test Results') {
             steps {
                 echo 'Mempublikasikan hasil tes ke Jenkins...'
@@ -34,11 +34,11 @@ pipeline {
             }
         }
         
-        // Tahap 5: Menggunakan bash
+        // Tahap 5: Menggunakan sh
         stage('Execute PHP Script') {
             steps {
-                echo 'Menjalankan skrip utama menggunakan bash...'
-                bash 'php index.php' // UBAH sh MENJADI bash
+                echo 'Menjalankan skrip utama menggunakan sh...'
+                sh 'php index.php' // KEMBALI KE sh
             }
         }
     } 
