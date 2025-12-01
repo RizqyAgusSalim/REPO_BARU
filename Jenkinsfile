@@ -1,6 +1,13 @@
-// Jenkinsfile (FINAL VERSION - BAT + JALUR PHP MUTLAK)
+// Jenkinsfile: Versi Final menggunakan BAT dan Jalur PHP Mutlak
 pipeline {
     agent any
+    
+    // Konfigurasi Environment Variable (Opsional, tapi membantu)
+    environment {
+        // Ganti jalur ini dengan PATH KE PHP.EXE di komputer Anda!
+        PHP_EXE = 'C:\\xampp\\php\\php.exe' 
+    }
+
     stages { 
         stage('Checkout Code') {
             steps {
@@ -9,42 +16,46 @@ pipeline {
             }
         } 
         
-        // Tahap 2: Menggunakan bat (memanggil PHP dengan jalur penuh)
         stage('Install Dependencies') {
             steps {
-                echo 'Menginstal Composer dependencies...'
-                // Catatan: composer install akan mencoba memanggil php.exe
-                // Jika "composer" (tanpa .exe) tidak ada di PATH, Anda harus panggil melalui php.exe
-                // Kita gunakan PHP mutlak untuk menjalankan Composer:
-                bat 'C:\\xampp\\php\\php.exe composer.phar install --no-dev --prefer-dist' 
+                echo 'Mengunduh dan Menginstal Composer dependencies...'
+                
+                // 1. Unduh composer.phar ke workspace Jenkins menggunakan PHP mutlak
+                // Langkah ini memastikan file composer.phar ada di workspace.
+                bat "${env.PHP_EXE} -r \"copy('https://getcomposer.org/installer', 'composer-setup.php');\""
+                bat "${env.PHP_EXE} composer-setup.php"
+                bat 'del composer-setup.php' // Hapus file setup
+                
+                // 2. Jalankan composer.phar untuk menginstal dependensi (vendor/)
+                bat "${env.PHP_EXE} composer.phar install --no-dev --prefer-dist" 
             }
         }
         
-        // Tahap 3: Menggunakan bat (memanggil PHPUnit dengan jalur penuh PHP)
         stage('Unit Test') {
             steps {
                 echo 'Menjalankan Unit Tests menggunakan PHPUnit...'
-                // Perintah Windows Command Prompt (bat):
+                // 1. Buat folder untuk hasil tes
                 bat 'mkdir target\\junit-reports' 
-                // PENTING: Gunakan jalur PHP mutlak untuk menjalankan PHPUnit executable
-                bat 'C:\\xampp\\php\\php.exe .\\vendor\\bin\\phpunit --log-junit target\\junit-reports\\test-results.xml tests\\' 
+                
+                // 2. Jalankan PHPUnit menggunakan PHP mutlak
+                // PHPUnit executable berada di .\\vendor\\bin\\phpunit
+                bat "${env.PHP_EXE} .\\vendor\\bin\\phpunit --log-junit target\\junit-reports\\test-results.xml tests\\" 
             }
         }
         
-        // Tahap 4: Tetap (JUnit tidak memerlukan PHP)
         stage('Publish Test Results') {
             steps {
                 echo 'Mempublikasikan hasil tes ke Jenkins...'
+                // Jenkins JUnit step bisa membaca file XML yang dihasilkan di atas
                 junit 'target/junit-reports/test-results.xml' 
             }
         }
         
-        // Tahap 5: Menggunakan bat (memanggil PHP dengan jalur penuh)
         stage('Execute PHP Script') {
             steps {
-                echo 'Menjalankan skrip utama menggunakan bat...'
-                // PENTING: Gunakan jalur PHP mutlak untuk menjalankan index.php
-                bat 'C:\\xampp\\php\\php.exe index.php'
+                echo 'Menjalankan skrip utama...'
+                // Jalankan skrip utama (index.php) menggunakan PHP mutlak
+                bat "${env.PHP_EXE} index.php"
             }
         }
     } 
