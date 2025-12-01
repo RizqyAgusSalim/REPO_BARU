@@ -1,14 +1,12 @@
 // Tugas jenkins/Jenkinsfile
 pipeline {
     agent any
-
-    stages {
         // --- Tahap 1: Mengambil Kode dari GitHub ---
-        stage('Checkout Code') {
-            steps {
-                echo 'Mengambil kode dari Git...'
-                // GANTI DENGAN URL REPO_BARU ANDA YANG ASLI
-                git url: 'URL_GITHUB_ANDA/REPO_BARU.git' 
+    stage('Checkout Code') {
+        steps {
+            echo 'Mengambil kode dari Git...'
+        // BAGIAN INI BENAR:
+        git url: 'https://github.com/RizqyAgusSalim/REPO_BARU'
             }
         }
         
